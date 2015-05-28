@@ -1,0 +1,5 @@
+# Sqlite Database directory:
+db/*
+
+# Emacs specific:
+.\#*

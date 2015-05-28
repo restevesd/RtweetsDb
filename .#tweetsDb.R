@@ -1,1 +1,0 @@
-bartek@Lenovo-IdeaPad-S300.6268:1432713053
