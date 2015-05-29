@@ -24,7 +24,6 @@ if (!dbExistsTable(con, tweets.table.name)) {
 }
 
 
-dbExistsTable(con, tweets.table.name)
 
 
 

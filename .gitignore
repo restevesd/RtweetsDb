@@ -1,5 +1,10 @@
+#Ignore Auth
+
+twitterAuth.R
+
 # Sqlite Database directory:
 db/*
 
 # Emacs specific:
 .\#*
+\#*
