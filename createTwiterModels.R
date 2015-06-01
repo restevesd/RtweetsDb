@@ -2,14 +2,14 @@ source('createDb.R')
 
 dbFileName <- "db/tweets.db"
 
-tweets.table.name <- "tweets"
-tweets.table.schema.file.name <- "conf/db/tweetsTable.txt"
+tweetsTS <- c("tweets", "conf/db/tweetsTable.txt")
+hashesTS <- c("hashes", "conf/db/hashesTable.txt")
+tweetsHashesTS <- c("tweetsHashes", "conf/db/tweetsHashesTable.txt")
 
 # creates tweets table
 
-con <- getConnection(dbFileName)
+connection <- getConnection(dbFileName)
 
-if (!dbExistsTable(con, tweets.table.name)) {
-  createTableFromFile(con, tweets.table.name, tweets.table.schema.file.name)
-}
-
+createTableFromFile(connection, tweetsTS[1], tweetsTS[2])
+createTableFromFile(connection, hashesTS[1], hashesTS[2])
+createTableFromFile(connection, tweetsHashesTS[1], tweetsHashesTS[2])

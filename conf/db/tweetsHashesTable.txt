@@ -1,0 +1,3 @@
+"id" TEXT,
+"tweets_id" TEXT,
+"hashes_id" TEXT

@@ -6,11 +6,17 @@ that save tweets.
 It does the following:
 
 * creates db
+* creates table following schema (tweets, hashes, tweetsHashes)
 
 
 ## Plan
 
-* Connects with a database that contains tables tweets, hashes and tweets_hashes
 * Updates tweets and tweets_hashes with only new tweets
 * Return data.frame of tweets for specific hash
 * and more ...
+
+## Testing
+
+    require('testthat')
+    test_dir('tests/testthat')
+
