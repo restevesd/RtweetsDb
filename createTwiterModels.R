@@ -10,6 +10,6 @@ tweets.table.schema.file.name <- "conf/db/tweetsTable.txt"
 con <- getConnection(dbFileName)
 
 if (!dbExistsTable(con, tweets.table.name)) {
-  create.table(tweets.table.name, tweets.table.schema.file.name)
+  createTableFromFile(con, tweets.table.name, tweets.table.schema.file.name)
 }
 

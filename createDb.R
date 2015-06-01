@@ -14,7 +14,16 @@ create.table <- function(connection, table.name,
   dbSendQuery(connection, create.table.query)
 }
 
+createTable <- function(connection, tableName, schema) {
+  query <- paste0(
+      "CREATE TABLE ",tableName,  " (", schema, ");")
+  dbSendQuery(connection, query)
+}
 
+createTableFromFile <- function(connection, tableName, schemaFileName) {
+  schema <- readChar(schemaFileName, file.info(schemaFileName)$size)
+  createTable(connection, tableName, schema)
+}
 
 
 
