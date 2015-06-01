@@ -1,16 +1,17 @@
-db.file.name <- "db/tweets.db"
-
 require('DBI')
 require("RSQLite")
 
-if (!file.exists('db')) dir.create('db')
-con <- dbConnect(SQLite(), db.file.name) 
+getConnection <- function(dbFileName) {
+  if (!file.exists('db')) dir.create('db')
+  dbConnect(SQLite(), dbFileName) 
+}
 
-create.table <- function(table.name, schema.file.name, db.file.name=db.file.name) {
+create.table <- function(connection, table.name,
+                         schema.file.name) {
   table.columns <- readChar(schema.file.name, file.info(schema.file.name)$size)
   create.table.query <- paste0(
       "CREATE TABLE ",table.name,  " (",  table.columns, ");")
-  dbSendQuery(con, create.table.query)
+  dbSendQuery(connection, create.table.query)
 }
 
 
