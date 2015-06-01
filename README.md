@@ -1,7 +1,12 @@
 # TweetsDb
 
-This project will contain set of function to interact with a database that
-save tweets.
+This project will contain set of function to interact with a database
+that save tweets.
+
+It does the following:
+
+* creates db
+
 
 ## Plan
 
