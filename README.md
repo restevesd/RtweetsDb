@@ -5,14 +5,14 @@ that save tweets.
 
 It does the following:
 
-* creates db
-* creates table following schema (tweets, hashes, tweetsHashes)
-
+* creates db;
+* creates table following schema (tweets, hashes, tweetsHashes);
+* updates tweets with new tweets only 
 
 ## Plan
 
-* Updates tweets and tweets_hashes with only new tweets
-* Return data.frame of tweets for specific hash
+* updates tweetsHashes with new tweets/hashes only
+* return data.frame of tweets for specific hash
 * and more ...
 
 ## Testing
