@@ -7,8 +7,16 @@ if (file.exists('twitterAuth.R')) {
   source('twitterAuth.R')
 }
 
-source('createTwiterModels.R')
+source('createTwitterModels.R')
 source('acctionsDb.R')
+source('createDb.R')
+
+models <- list(c("tweets", "conf/db/tweetsTable.txt"),
+               c("hashes", "conf/db/hashesTable.txt"),
+               c("hashesTweets", "conf/db/hashesTweetsTable.txt"))
+
+connection <- getConnection('db/tweets.db')
+createModels(connection, models)
 
 dbListTables(connection)
 
@@ -19,7 +27,7 @@ dm.tweets <- searchTwitter("#python", n=50, lang="es")
 
 dm.df <- twListToDF(dm.tweets)
 
-dbReadTable(connection, "tweets")
+tws <- dbReadTable(connection, "tweets")
 dbReadTable(connection, "hashes")
 dbReadTable(connection, "tweetsHashes")
 dbWriteNewRows(connection, "tweets", dm.df)
