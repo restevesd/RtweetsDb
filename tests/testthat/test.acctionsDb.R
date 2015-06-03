@@ -7,22 +7,25 @@ questions <- data.frame(id=c(1,2), sentence=c('q1', 'q2'))
 newQuestions <- data.frame(id=c(2,3), sentence=c('q2b', 'q3'))
 
 describe('getColumn()', {
-  it('is expect to return a vector with a column', {
-    dbWriteTable(connection, 'questions', questions)
-    col <- getColumn(connection, 'questions', 'sentence')
-    expect_that(col, equals(c('q1', 'q2')))
-    dbRemoveTable(connection, 'questions')
+  dbWriteTable(connection, 'questions', questions)
+  describe('when one column given', {
+    it('is expect to return a dataframe with the column', {
+      col <- getColumn(connection, 'questions', 'sentence')
+      expect_that(dim(col), equals(c(2,1)))
+      expect_that(col$sentence, equals(c('q1', 'q2')))
+    })
   })
+  describe('when two columns given', {
+    it('is expect to return a dataframe with the column', {
+      col <- getColumn(connection, 'questions', c('sentence','id'))
+      expect_that(dim(col), equals(c(2,2)))
+      expect_that(col$sentence, equals(c('q1', 'q2')))
+      expect_that(col$id, equals(c(1, 2)))
+    })
+  })
+  dbRemoveTable(connection, 'questions')
 })
 
-describe('getIds()', {
-  it('is expect to return a vector with a column of ids', {
-    dbWriteTable(connection, 'questions', questions)
-    col <- getIds(connection, 'questions')
-    expect_that(col, equals(c(1, 2)))
-    dbRemoveTable(connection, 'questions')
-  })
-})
 
 
 describe("dbWriteNewRows", {
