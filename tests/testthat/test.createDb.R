@@ -11,8 +11,11 @@ describe('creating db', {
 
 connection <- getConnection(testDbPath)
 
-test_that('creating table', {
-  createTable(connection, "question", "id int, sentence text")
-  expect_that(dbExistsTable(connection, "question"), is_true())
-  expect_that('id' %in% dbListFields(connection, 'question'), is_true())
-});
+describe('createTable()', {
+  it('should create table', {
+    createTable(connection, "question", "id int, sentence text")
+    expect_that(dbExistsTable(connection, "question"), is_true())
+    expect_that('id' %in% dbListFields(connection, 'question'), is_true())
+  })
+})
+

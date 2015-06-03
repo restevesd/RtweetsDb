@@ -8,7 +8,5 @@ models <- list(c("questions", "tests/testthat/models/questions.txt"),
 connection <- getConnection('db/test.tweets.db')
 createModels(connection, models)
 
-describe('dbWriteHashedTweets', {
-  expect_that(TRUE, is_false())
-})
+
 

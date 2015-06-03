@@ -5,6 +5,11 @@ source('acctionsDb.R')
 connection <- getConnection(testDbPath)
 questions <- data.frame(id=c(1,2), sentence=c('q1', 'q2'))
 newQuestions <- data.frame(id=c(2,3), sentence=c('q2b', 'q3'))
+answersQuestions <- data.frame(answers_id  = c(1,2,3,4),
+                               questions_id = c(1,2,3,4))
+
+newAnswersQuestions <- data.frame(answers_id  = c(1,2,3,4),
+                                  questions_id = c(1,2,4,5))
 
 describe('getColumn()', {
   dbWriteTable(connection, 'questions', questions)
@@ -27,15 +32,99 @@ describe('getColumn()', {
 })
 
 
+describe("dbWriteNewRows()", {
 
-describe("dbWriteNewRows", {
   it('appends rows that have new id', {
     dbWriteNewRows(connection, 'questions', questions)
     expect_that(dim(dbReadTable(connection, 'questions')),
                 equals(c(2,2)))
     dbWriteNewRows(connection, 'questions', newQuestions)
-    expect_that(dim(dbReadTable(connection, 'questions')),
-                equals(c(3,2)))
+    rdf <- dbReadTable(connection, 'questions')
+    expect_that(rdf[3,2], equals('q3'))
+    expect_that(dim(rdf), equals(c(3,2)))
   });
-});
+
+  it('should appends rows that have new pk (multiple)', {
+    dbWriteNewRows(connection, 'answersQuestions',
+                   answersQuestions, pk=c('answers_id', 'questions_id'))
+    rdf <- dbReadTable(connection, 'answersQuestions')
+    expect_that(dim(rdf), equals(c(4,2)))
+    dbWriteNewRows(connection, 'answersQuestions',
+                   newAnswersQuestions, pk=c('answers_id', 'questions_id'))
+    expect_that(dim(dbReadTable(connection, 'answersQuestions')),
+                equals(c(6,2)))
+  })
+
+  ## describe('with serial id', {
+  ##   it('should set id to 1 and then 2', {
+  ##     createTable(connection, "cars", "id serial, type text")
+  ##     expect_that('id' %in% dbListFields(connection, 'cars'), is_true())
+  ##     cars <- data.frame(type=c('T1', 'T2'))
+  ##     print(cars)
+  ##     dbWriteNewRows(connection, 'cars', cars, pk='type')
+  ##     rdf <- dbReadTable(connection, 'cars')
+  ##     print(rdf)
+  ##   })
+  ## })
+})
+
+
+
+describe('dbAddChildrenM2M', {
+  describe('quesitonnaire with id', {
+    dbRemoveTable(connection, 'questions')
+    questionnaire <- data.frame(id=1,title=c('QS1'))
+    dbAddChildrenM2M(connection,
+                     'questionnaires', questionnaire,
+                     'questions', questions)
+    expect_that(dbReadTable(connection, 'questionnaires')[1,]$id, equals(1))
+    expect_that(dbReadTable(connection, 'questionnaires')[1,2], equals('QS1'))
+    qq.df <- dbReadTable(connection, 'questionnairesQuestions')
+    expect_that(dim(qq.df), equals(c(2,2)))
+    expect_that(qq.df[2,]$questions_fk, equals(2))
+    expect_that(qq.df[1,]$questionnaires_fk, equals(1))
+    qs.df <- dbReadTable(connection, 'questions')
+    expect_that(dim(qs.df), equals(c(2,2)))
+    dbAddChildrenM2M(connection,
+                     'questionnaires', questionnaire,
+                     'questions', newQuestions)
+
+    q.df <- dbReadTable(connection, 'questionnaires')
+    expect_that(dim(q.df), equals(c(1,2)))
+    qs.df <- dbReadTable(connection, 'questions')
+    expect_that(dim(qs.df), equals(c(3,2)))
+    qq.df <- dbReadTable(connection, 'questionnairesQuestions')
+    expect_that(dim(qq.df), equals(c(3,2)))
+  })
+
+  describe('quesitonnaire without id', {
+    dbRemoveTable(connection, 'questions')
+    dbRemoveTable(connection, 'questionnaires')
+    dbRemoveTable(connection, 'questionnairesQuestions')
+    questionnaire <- data.frame(title=c('QS1'))
+    dbAddChildrenM2M(connection,
+                     'questionnaires', questionnaire,
+                     'questions', questions, father.pk='title')
+    q.df <- dbReadTable(connection, 'questionnaires')
+    expect_that(dim(q.df), equals(c(1,1)))
+    qq.df <- dbReadTable(connection, 'questionnairesQuestions')
+    expect_that(dim(qq.df), equals(c(2,2)))
+    expect_that(qq.df[2,]$questions_fk, equals(2))
+    expect_that(qq.df[1,]$questionnaires_fk, equals("QS1"))
+    qs.df <- dbReadTable(connection, 'questions')
+    expect_that(dim(qs.df), equals(c(2,2)))
+    dbAddChildrenM2M(connection,
+                     'questionnaires', questionnaire,
+                     'questions', newQuestions, father.pk='title')
+    q.df <- dbReadTable(connection, 'questionnaires')
+    expect_that(dim(q.df), equals(c(1,1)))
+    qs.df <- dbReadTable(connection, 'questions')
+    expect_that(dim(qs.df), equals(c(3,2)))
+
+    qq.df <- dbReadTable(connection, 'questionnairesQuestions')
+
+    expect_that(dim(qq.df), equals(c(3,2)))
+  })
+
+})
 

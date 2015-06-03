@@ -8,10 +8,11 @@ It does the following:
 * creates db;
 * creates table following schema (tweets, hashes, tweetsHashes);
 * updates tweets with new tweets only 
+* updates tweetsHashes with new tweets/hashes only
 
 ## Plan
 
-* updates tweetsHashes with new tweets/hashes only
+* 
 * return data.frame of tweets for specific hash
 * and more ...
 
