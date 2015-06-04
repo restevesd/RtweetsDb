@@ -68,8 +68,6 @@ describe("dbWriteNewRows()", {
   ## })
 })
 
-
-
 describe('dbAddChildrenM2M', {
   describe('quesitonnaire with id', {
     dbRemoveTable(connection, 'questions')
@@ -125,6 +123,24 @@ describe('dbAddChildrenM2M', {
 
     expect_that(dim(qq.df), equals(c(3,2)))
   })
-
 })
 
+describe('dbReadChildrenM2M', {
+  dbRemoveTable(connection, 'questions')
+  dbRemoveTable(connection, 'questionnaires')
+  dbRemoveTable(connection, 'questionnairesQuestions')
+  questionnaire <- data.frame(title=c('QS1'))
+  questionnaire2 <- data.frame(title=c('QS2'))
+  dbAddChildrenM2M(connection,
+                   'questionnaires', questionnaire,
+                   'questions', questions, father.pk='title')
+  dbAddChildrenM2M(connection,
+                   'questionnaires', questionnaire2,
+                   'questions', newQuestions, father.pk='title')
+  res.df <- dbReadChildrenM2M(connection, 'questionnaires', 'QS1',
+                          'questions', father.pk='title')
+  print(res.df)
+  print(dbReadChildrenM2M(connection, 'questionnaires', 'QS2',
+                          'questions', father.pk='title'))
+
+})

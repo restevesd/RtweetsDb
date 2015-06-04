@@ -12,8 +12,8 @@ source('acctionsDb.R')
 source('createDb.R')
 
 models <- list(c("tweets", "conf/db/tweetsTable.txt"),
-               c("hashes", "conf/db/hashesTable.txt"),
-               c("hashesTweets", "conf/db/hashesTweetsTable.txt"))
+               c("hashes", "conf/db/hashesTable.txt") )
+
 
 connection <- getConnection('db/tweets.db')
 createModels(connection, models)
@@ -23,19 +23,25 @@ dbListTables(connection)
 options(httr_oauth_cache=TRUE)
 setup_twitter_oauth(api_key, api_secret, access_token, access_token_secret)
 
-dm.tweets <- searchTwitter("#python", n=50, lang="es")
+hash.txt <- '#python'
+tweets.tweets <- searchTwitter(hash.txt, n=50, lang="es")
+tweets.df <- twListToDF(tweets.tweets)
 
-dbWriteNewRowsForHash <- function(connection, hash.text, tweets.df) {
-  dbWriteNewRows(connection, "hashes", hash.text)
-}
 
-dm.df <- twListToDF(dm.tweets)
+hash.row <- data.frame(hash='#python')
+hash.row
+dbAddChildrenM2M(connection, 'hashes', hash.row,
+                 'tweets', tweets.df, father.pk='hash')
+dbReadChildrenM2M(connection, 'hashes', hash.row,
+                 'tweets', tweets.df, father.pk='hash')
+
 
 tws <- dbReadTable(connection, "tweets")
 dbReadTable(connection, "hashes")
 dbReadTable(connection, "hashesTweets")
-dbWriteNewRows(connection, "tweets", dm.df)
 dbReadTable(connection, "tweets")
 
-source("acctionsDb.R")
-getIds(connection, "tweets")
+
+
+
+

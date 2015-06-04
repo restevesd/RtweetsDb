@@ -1,3 +1,0 @@
-"id" int,
-"tweets_id" TEXT,
-"hashes_id" int

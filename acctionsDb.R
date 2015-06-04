@@ -8,7 +8,9 @@ getColumn <- function(connection, model, column.names) {
   cols.txt <- paste(column.names, collapse=', ')
   query.txt <- paste("SELECT", cols.txt, "FROM", model)
   res <- dbSendQuery(connection, query.txt)
-  dbFetch(res)
+  res.df <- dbFetch(res)
+  dbClearResult(res)
+  res.df
 }
 
 dbWriteNewRows <- function(connection, model, df, pk='id') {
@@ -19,7 +21,13 @@ dbWriteNewRows <- function(connection, model, df, pk='id') {
       mergedDF <- merge(df, df.old, all.x=TRUE, by=pk)
       ines.new <- which(is.na(mergedDF$dbWriteNewRowsControllX152))
       if (length(ines.new)!=0) {
-        dbWriteTable(connection, model, df[ines.new,], append=TRUE)
+        if (dim(df)[2]==1) {
+          df.new <- data.frame(df[ines.new,])
+          colnames(df.new)=colnames(df)
+        } else {
+          df.new <- df[ines.new,]
+        }
+        dbWriteTable(connection, model, df.new, append=TRUE)
       }
     } else {
       dbWriteTable(connection, model, df, append=TRUE)
@@ -28,6 +36,12 @@ dbWriteNewRows <- function(connection, model, df, pk='id') {
     dbWriteTable(connection, model, df)
   }
 }
+
+joinModelName <- function(s1, s2) {
+  models <- sort(c(s1,s2))
+  paste0(models[1],capitalize(models[2]))
+}
+
 
 dbAddChildrenM2M <- function(connection,
                              father.model, father.row, 
@@ -38,8 +52,7 @@ dbAddChildrenM2M <- function(connection,
   dbWriteNewRows(connection, father.model, father.row, pk=father.pk)
   dbWriteNewRows(connection, children.model, children.df, pk=children.pk)
   if (is.null(through)) {
-    models <- sort(c(father.model,children.model))
-    join.model <- paste0(models[1],capitalize(models[2]))
+    join.model <- joinModelName(father.model, children.model)
     father.cname <- paste0(father.model,'_fk')
     children.cname <- paste0(children.model,'_fk')
     children.pks <- children.df[[c(children.pk)]]
@@ -51,3 +64,34 @@ dbAddChildrenM2M <- function(connection,
   }
 
 }
+
+dbReadChildrenM2M <- function(connection,
+                             father.model, father.pk.value, 
+                             children.model,
+                             father.pk='id', children.pk='id',
+                             through=NULL
+                             ) {
+  join.model <- joinModelName(father.model, children.model)
+  father.cname <- paste0(father.model,'_fk')
+  children.cname <- paste0(children.model,'_fk')
+  query <- paste0(
+    'SELECT * ',
+    ' FROM ',
+    children.model, ' JOIN ',
+      '(SELECT ', children.cname,
+      ' FROM ', 
+      join.model, ', ',  father.model,
+      ' WHERE ',
+      father.cname, '=', father.pk, ' AND ',
+      father.pk,'=', '"', father.pk.value, '"',
+      ') ',
+    'ON ',
+    children.cname, '=', children.pk,
+    ';')
+  res <- dbSendQuery(connection, query)
+  res.df <- dbFetch(res)
+  dbClearResult(res)
+
+  n <- dim(res.df)[2]
+  res.df[,-n]
+};
