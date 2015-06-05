@@ -4,12 +4,19 @@ source('acctionsDb.R')
 
 connection <- getConnection(testDbPath)
 questions <- data.frame(id=c(1,2), sentence=c('q1', 'q2'))
+questionsM1 <- data.frame(id=c(1,2,5), sentence=c('q1', 'q2', 'q5'))
 newQuestions <- data.frame(id=c(2,3), sentence=c('q2b', 'q3'))
 answersQuestions <- data.frame(answers_id  = c(1,2,3,4),
                                questions_id = c(1,2,3,4))
 
 newAnswersQuestions <- data.frame(answers_id  = c(1,2,3,4),
                                   questions_id = c(1,2,4,5))
+
+clearDB <-  function() {
+  dbRemoveTableIfExists(connection, 'questions')
+  dbRemoveTableIfExists(connection, 'questionnaires')
+  dbRemoveTableIfExists(connection, 'questionnairesQuestions')    
+}
 
 describe('getColumn()', {
   dbWriteTable(connection, 'questions', questions)
@@ -31,6 +38,35 @@ describe('getColumn()', {
   dbRemoveTable(connection, 'questions')
 })
 
+
+describe('selectNewRows', {
+  describe('one new', {
+    q1 <- data.frame(id=c(2,1))
+    q2 <- data.frame(id=c(3,2,1))
+    expect_that(selectNewRows(q2,q1)[1,1], equals(3))
+  })
+  describe('one new, different order', {
+    q1 <- data.frame(id=c(2,1))
+    q2 <- data.frame(id=c(2,3,1))
+    expect_that(selectNewRows(q2,q1)[1,1], equals(3))
+  })
+  describe('one new, different order', {
+    q1 <- data.frame(id=c(2,1))
+    q2 <- data.frame(id=c(3))
+    expect_that(selectNewRows(q2,q1)[1,1], equals(3))
+  })
+  describe('no new', {
+    q1 <- data.frame(id=c(2,1))
+    q2 <- data.frame(id=c(2))
+    expect_that(selectNewRows(q2,q1),is_null())
+  })
+  describe('no old', {
+    q1 <- data.frame()
+    q2 <- data.frame(id=c(1))
+    expect_that(selectNewRows(q2,q1)[1,1], equals(1))
+  })
+
+});
 
 describe("dbWriteNewRows()", {
 
@@ -55,6 +91,14 @@ describe("dbWriteNewRows()", {
                 equals(c(6,2)))
   })
 
+  ## describe('adding twice, second time, one row more', {
+  ##   clearDB()
+  ##   dbWriteNewRows(connection, 'questions', questions)
+  ##   dbWriteNewRows(connection, 'questions', questionsM1)
+  ##   print(dbReadTable(connection, 'questions'))
+    
+  ## })
+  
   ## describe('with serial id', {
   ##   it('should set id to 1 and then 2', {
   ##     createTable(connection, "cars", "id serial, type text")
@@ -125,22 +169,43 @@ describe('dbAddChildrenM2M', {
   })
 })
 
+
+
+
 describe('dbReadChildrenM2M', {
-  dbRemoveTable(connection, 'questions')
-  dbRemoveTable(connection, 'questionnaires')
-  dbRemoveTable(connection, 'questionnairesQuestions')
-  questionnaire <- data.frame(title=c('QS1'))
-  questionnaire2 <- data.frame(title=c('QS2'))
-  dbAddChildrenM2M(connection,
-                   'questionnaires', questionnaire,
-                   'questions', questions, father.pk='title')
-  dbAddChildrenM2M(connection,
-                   'questionnaires', questionnaire2,
-                   'questions', newQuestions, father.pk='title')
-  res.df <- dbReadChildrenM2M(connection, 'questionnaires', 'QS1',
-                          'questions', father.pk='title')
-  print(res.df)
-  print(dbReadChildrenM2M(connection, 'questionnaires', 'QS2',
-                          'questions', father.pk='title'))
+  beforeEach <- clearDB
+  
+  describe('write twice', {
+    beforeEach()
+    questionnaire <- data.frame(title=c('QS1'))
+    dbAddChildrenM2M(connection,
+                     'questionnaires', questionnaire,
+                     'questions', questions, father.pk='title')
+    dbAddChildrenM2M(connection,
+                     'questionnaires', questionnaire,
+                     'questions', rbind(questions, newQuestions), father.pk='title')
+    res.df <- dbReadChildrenM2M(connection, 'questionnaires', 'QS1',
+                                'questions', father.pk='title')
+    expect_that(dim(res.df), equals(c(3,2)))
+  })
+
+  describe('write once two hashes', {
+    beforeEach()
+    questionnaire <- data.frame(title=c('QS1'))
+    questionnaire2 <- data.frame(title=c('QS2'))
+    dbAddChildrenM2M(connection,
+                     'questionnaires', questionnaire,
+                     'questions', questions, father.pk='title')
+    dbAddChildrenM2M(connection,
+                     'questionnaires', questionnaire2,
+                     'questions', newQuestions, father.pk='title')
+    res.df <- dbReadChildrenM2M(connection, 'questionnaires', 'QS1',
+                                'questions', father.pk='title')
+    expect_that(dim(res.df), equals(c(2,2)))
+    res.df <- dbReadChildrenM2M(connection, 'questionnaires', 'QS2',
+                                'questions', father.pk='title')
+    expect_that(dim(res.df), equals(c(2,2)))
+    
+  })
 
 })

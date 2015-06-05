@@ -24,24 +24,30 @@ options(httr_oauth_cache=TRUE)
 setup_twitter_oauth(api_key, api_secret, access_token, access_token_secret)
 
 hash.txt <- '#python'
-tweets.tweets <- searchTwitter(hash.txt, n=50, lang="es")
+tweets.tweets <- searchTwitter(hash.txt, n=7, lang="es")
 tweets.df <- twListToDF(tweets.tweets)
 
 
-hash.row <- data.frame(hash='#python')
-hash.row
+hash.row <- data.frame(hash=hash.txt)
+
+print(dim(tweets.df))
+source('acctionsDb.R')
 dbAddChildrenM2M(connection, 'hashes', hash.row,
                  'tweets', tweets.df, father.pk='hash')
-dbReadChildrenM2M(connection, 'hashes', hash.row,
-                 'tweets', tweets.df, father.pk='hash')
 
+r1 <- dbReadChildrenM2M(connection, 'hashes', hash.txt,
+                        'tweets', father.pk='hash')
+dbReadTable(connection, 'hashesTweets')
+dbReadTable(connection, 'tweets')
+r1$id
 
 tws <- dbReadTable(connection, "tweets")
+dim(tws)
 dbReadTable(connection, "hashes")
 dbReadTable(connection, "hashesTweets")
 dbReadTable(connection, "tweets")
 
 
-
+dbDisconnect(connection)
 
 

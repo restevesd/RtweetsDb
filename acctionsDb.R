@@ -13,24 +13,34 @@ getColumn <- function(connection, model, column.names) {
   res.df
 }
 
+
+selectNewRows <- function(df, df.old, pk='id') {
+  if (dim(df.old)[1]!=0) {
+    df.old$dbWriteNewRowsControllX152 <- rep('old',dim(df.old)[1])
+    mergedDF <- merge(df, df.old, all.x=TRUE, by=pk)
+    ines.new <- which(is.na(mergedDF$dbWriteNewRowsControllX152))
+    if (length(ines.new)!=0) {
+      n <- length(colnames(mergedDF))
+      df.new <- mergedDF[is.na(mergedDF$dbWriteNewRowsControllX152),-n]
+      if (dim(df)[2]==1) {
+        df.new <- data.frame(df.new)
+        colnames(df.new)=colnames(df)
+      } 
+    } else {
+      df.new <- NULL
+    }
+  } else {
+    df.new <- df
+  }
+  df.new
+}
+
 dbWriteNewRows <- function(connection, model, df, pk='id') {
   if (dbExistsTable(connection, model)) {
-    df.old <-   getColumn(connection, model, pk)
-    if (dim(df.old)[1]!=0) {
-      df.old$dbWriteNewRowsControllX152 <- rep('old',dim(df.old)[1])
-      mergedDF <- merge(df, df.old, all.x=TRUE, by=pk)
-      ines.new <- which(is.na(mergedDF$dbWriteNewRowsControllX152))
-      if (length(ines.new)!=0) {
-        if (dim(df)[2]==1) {
-          df.new <- data.frame(df[ines.new,])
-          colnames(df.new)=colnames(df)
-        } else {
-          df.new <- df[ines.new,]
-        }
-        dbWriteTable(connection, model, df.new, append=TRUE)
-      }
-    } else {
-      dbWriteTable(connection, model, df, append=TRUE)
+    df.old <- getColumn(connection, model, pk)
+    df.new <- selectNewRows(df, df.old, pk)
+    if (!is.null(df.new)) {
+      dbWriteTable(connection, model, df.new, append=TRUE)
     }
   } else {
     dbWriteTable(connection, model, df)
@@ -62,7 +72,6 @@ dbAddChildrenM2M <- function(connection,
     colnames(join.df) <- join.colnames
     dbWriteNewRows(connection, join.model, join.df, pk=join.colnames)
   }
-
 }
 
 dbReadChildrenM2M <- function(connection,
@@ -75,7 +84,7 @@ dbReadChildrenM2M <- function(connection,
   father.cname <- paste0(father.model,'_fk')
   children.cname <- paste0(children.model,'_fk')
   query <- paste0(
-    'SELECT * ',
+    'SELECT DISTINCT * ',
     ' FROM ',
     children.model, ' JOIN ',
       '(SELECT ', children.cname,
@@ -95,3 +104,10 @@ dbReadChildrenM2M <- function(connection,
   n <- dim(res.df)[2]
   res.df[,-n]
 };
+
+
+dbRemoveTableIfExists <- function(connection, model) {
+  if (dbExistsTable(connection, model)) {
+    dbRemoveTable(connection, model)
+  }
+}
