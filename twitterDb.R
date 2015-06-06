@@ -1,18 +1,15 @@
 require('twitteR')
-
 # In file 'twitterAuth.R' one can assign appropriate values to variables: 
 # api_key, api_secret, access_token, access_token_secret
-
 if (file.exists('twitterAuth.R')) {
   source('twitterAuth.R')
 }
+options(httr_oauth_cache=TRUE)
+setup_twitter_oauth(api_key, api_secret, access_token, access_token_secret)
 
 source('createModels.R')
 source('acctionsDb.R')
 source('createDb.R')
-
-options(httr_oauth_cache=TRUE)
-setup_twitter_oauth(api_key, api_secret, access_token, access_token_secret)
 
 DBPATH <- 'db/tweets.db'
 
@@ -24,8 +21,6 @@ createTwitterModels <- function(db.path=DBPATH) {
   createModels(connection, models)
   dbDisconnect(connection)
 }
-
-createTwitterModels()
 
 getAndSaveTweets <- function(hash.txt, n=100, db.path=DBPATH) {
   tweets.tweets <- searchTwitter(hash.txt, n, lang="es")
@@ -43,4 +38,12 @@ getTweetsFromDB <- function(hash.txt, db.path=DBPATH) {
                                  'tweets', father.pk='hash')
   dbDisconnect(connection)
   tweets.df
+}
+
+updateAllHashes <- function(db.path=DBPATH) {
+  connection <- getConnection(db.path)
+  hashes <- dbReadTable(connection, 'hashes')
+  apply(hashes, 1, function(row) {getAndSaveTweets(row[1])})
+  dbDisconnect(connection)
+  #hashes
 }

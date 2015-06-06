@@ -100,7 +100,6 @@ dbReadChildrenM2M <- function(connection,
   res <- dbSendQuery(connection, query)
   res.df <- dbFetch(res)
   dbClearResult(res)
-
   n <- dim(res.df)[2]
   res.df[,-n]
 };
