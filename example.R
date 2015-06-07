@@ -1,16 +1,16 @@
 source('twitterDb.R')
 
+twitterOAuth()
 createTwitterModels()
 
-
-getAndSaveTweets('#python')
-getAndSaveTweets('#ruby')
-getAndSaveTweets('#R')
-getAndSaveTweets('#javascript')
-
-getTweetsFromDB('#python')
+addHash(c('#python', '#ruby', '#R', '#javascript'))
 
 updateAllHashes()
+
+#getAndSaveTweets('#testingRtweets')
+
+dim(getTweetsFromDB('#R'))
+
 
 
 

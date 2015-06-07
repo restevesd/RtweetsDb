@@ -65,7 +65,12 @@ describe('selectNewRows', {
     q2 <- data.frame(id=c(1))
     expect_that(selectNewRows(q2,q1)[1,1], equals(1))
   })
-
+  describe('does not desorder columns', {
+    q1 <- data.frame(id=c(2,1))
+    q2 <- data.frame(x=c(1,1,1),id=c(2,3,1))
+    cn <- colnames(selectNewRows(q2,q1))
+    expect_that(cn, equals(c('x', 'id')))
+  })
 });
 
 describe("dbWriteNewRows()", {

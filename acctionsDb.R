@@ -13,11 +13,10 @@ getColumn <- function(connection, model, column.names) {
   res.df
 }
 
-
 selectNewRows <- function(df, df.old, pk='id') {
   if (dim(df.old)[1]!=0) {
     df.old$dbWriteNewRowsControllX152 <- rep('old',dim(df.old)[1])
-    mergedDF <- merge(df, df.old, all.x=TRUE, by=pk)
+    mergedDF <- merge(df, df.old, all.x=TRUE, by=pk, sort = FALSE)
     ines.new <- which(is.na(mergedDF$dbWriteNewRowsControllX152))
     if (length(ines.new)!=0) {
       n <- length(colnames(mergedDF))
@@ -25,7 +24,9 @@ selectNewRows <- function(df, df.old, pk='id') {
       if (dim(df)[2]==1) {
         df.new <- data.frame(df.new)
         colnames(df.new)=colnames(df)
-      } 
+      } else {
+        df.new <- df.new[colnames(df)]
+      }
     } else {
       df.new <- NULL
     }
@@ -51,7 +52,6 @@ joinModelName <- function(s1, s2) {
   models <- sort(c(s1,s2))
   paste0(models[1],capitalize(models[2]))
 }
-
 
 dbAddChildrenM2M <- function(connection,
                              father.model, father.row, 
