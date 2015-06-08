@@ -33,7 +33,7 @@ addHash <- function(hash.txt, db.path=DBPATH) {
 }
 
 getAndSaveTweets <- function(hash.txt, n=NTWEETS, db.path=DBPATH) {
-  tweets.tweets <- searchTwitter(hash.txt, n, lang="es")
+  tweets.tweets <- searchTwitter(hash.txt, n)
   if (length(tweets.tweets) != 0) {
     tweets.df <- twListToDF(tweets.tweets)
     hash.row <- data.frame(hash=hash.txt)
@@ -57,4 +57,11 @@ updateAllHashes <- function(db.path=DBPATH) {
   hashes <- dbReadTable(connection, 'hashes')
   apply(hashes, 1, function(row) {getAndSaveTweets(row[1])})
   dbDisconnect(connection)
+}
+
+getAllHashes <- function(db.path=DBPATH) {
+  connection <- getConnection(db.path)
+  hashes <- dbReadTable(connection, 'hashes')
+  dbDisconnect(connection)
+  hashes
 }
