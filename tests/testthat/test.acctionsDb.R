@@ -204,13 +204,22 @@ describe('dbReadChildrenM2M', {
     dbAddChildrenM2M(connection,
                      'questionnaires', questionnaire2,
                      'questions', newQuestions, father.pk='title')
-    res.df <- dbReadChildrenM2M(connection, 'questionnaires', 'QS1',
+    it('is expected to return 2 results', {
+      res.df <- dbReadChildrenM2M(connection, 'questionnaires', 'QS1',
                                 'questions', father.pk='title')
-    expect_that(dim(res.df), equals(c(2,2)))
-    res.df <- dbReadChildrenM2M(connection, 'questionnaires', 'QS2',
-                                'questions', father.pk='title')
-    expect_that(dim(res.df), equals(c(2,2)))
-    
+      expect_that(dim(res.df), equals(c(2,2)))
+    })
+    it('is also expected to return 2 results', {
+      res.df <- dbReadChildrenM2M(connection, 'questionnaires', 'QS2',
+                                  'questions', father.pk='title')
+      expect_that(dim(res.df), equals(c(2,2)))
+    })
+    it('sometimes can return less when set n.fetch', {
+      res.df <- dbReadChildrenM2M(connection, 'questionnaires', 'QS2',
+                                  'questions', father.pk='title',
+                                  n.fetch=1)
+      expect_that(dim(res.df), equals(c(1,2)))
+    })
   })
 
 })
