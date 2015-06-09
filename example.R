@@ -3,13 +3,13 @@ source('twitterDb.R')
 twitterOAuth()
 createTwitterModels()
 
-addHash(c('#python', '#ruby', '#R', '#javascript'))
+addHash(c('#STOPDesigualdad','#IGUALES'))
 
 updateAllHashes()
 
 #getAndSaveTweets('#testingRtweets')
 
-dim(getTweetsFromDB('#R'))
+dim(getTweetsFromDB('#STOPDesigualdad'))
 
 
 

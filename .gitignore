@@ -1,6 +1,6 @@
 #Ignore Auth
 
-twitterAuth.R
+config/twitterAuth.R
 
 # Sqlite Database directory:
 db/*
