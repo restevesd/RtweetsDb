@@ -55,10 +55,11 @@ getAndSaveTweets <- function(hash.txt, n=NTWEETS, db.path=DBPATH) {
   }
 }
 
-getTweetsFromDB <- function(hash.txt, db.path=DBPATH) {
+getTweetsFromDB <- function(hash.txt, db.path=DBPATH, n.tweets=1000) {
   connection <- getConnection(db.path)
   tweets.df <- dbReadChildrenM2M(connection, 'hashes', hash.txt,
-                                 'tweets', father.pk='hash')
+                                 'tweets', father.pk='hash',
+                                 n.fetch=n.tweets)
   dbDisconnect(connection)
   tweets.df
 }
