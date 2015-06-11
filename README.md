@@ -3,13 +3,12 @@
 
 ## Description
 
-This project will contain set of function to interact with a database
-that save tweets.
+This project contains set of functions that interact with a database
+of tweets.
 
 It does the following general operations.
 
-
-* creates db;
+* creates db (sqlite tested at the moment, but other should work with minor modification);
 * creates tables following schema (see config/db for twitter schema)
 * creates many-two-many association between two models
 
