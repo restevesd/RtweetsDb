@@ -1,5 +1,5 @@
 source('helper.R')
-source('createDb.R')
+source('lib/RtweetsDb/createDb.R')
 
 describe('creating db', {
   it("is expected to create DB", {

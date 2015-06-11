@@ -1,5 +1,6 @@
 source('helper.R')
-source('createModels.R')
+source('lib/RtweetsDb/createDb.R')
+source('lib/RtweetsDb/createModels.R')
 
 models <- list(c("questions", "tests/testthat/models/questions.txt"),
                c("answers", "tests/testthat/models/answers.txt"),

@@ -1,6 +1,6 @@
 source('helper.R')
-source('createDb.R')
-source('acctionsDb.R')
+
+source('RtweetsDb.R')
 
 connection <- getConnection(testDbPath)
 questions <- data.frame(id=c(1,2), sentence=c('q1', 'q2'))
