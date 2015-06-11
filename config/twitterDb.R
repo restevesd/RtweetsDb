@@ -1,2 +1,2 @@
-NTWEETS <- 10
+NTWEETS <- 100
 DBPATH <- 'db/tweets.db'

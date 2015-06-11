@@ -12,10 +12,9 @@ addHash(c('#STOPDesigualdad','#IGUALES'))
 
 updateAllHashes()
 
-#getAndSaveTweets('#testingRtweets')
-
 dim(getTweetsFromDB('#STOPDesigualdad'))
 dim(getTweetsFromDB('#IGUALES'))
+
 
 
 

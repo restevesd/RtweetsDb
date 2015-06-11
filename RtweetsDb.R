@@ -17,7 +17,7 @@ if (!exists('NTWEETS')) {
   NTWEETS <- 100
 }
 
-# In file 'twitterAuth.R' one can assign appropriate values to variables: 
+# In file 'config/twitterAuth.R' one can assign appropriate values to variables: 
 # api_key, api_secret, access_token, access_token_secret
 # This file is ignored by git
 
