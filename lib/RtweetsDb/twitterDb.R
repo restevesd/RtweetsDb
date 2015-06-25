@@ -1,4 +1,3 @@
-
 createTwitterModels <- function(db.path=DBPATH) {
   models <- list(c("tweets", "config/db/tweetsTable.txt"),
                  c("hashes", "config/db/hashesTable.txt"),
@@ -42,6 +41,21 @@ getAndSaveTweets <- function(hash.txt, n=NTWEETS, db.path=DBPATH) {
   return(newChildren)
 }
 
+getAll <- function(model, db.path=DBPATH) {
+  connection <- getConnection(db.path)
+  elements <- dbReadTable(connection, model)
+  dbDisconnect(connection)
+  elements
+}
+
+getAllHashes <- function(db.path=DBPATH) {
+  getAll('hashes', db.path)
+}
+
+getAllUsers <- function(db.path=DBPATH) {
+  getAll('users', db.path)
+}
+
 getTweetsFromDB <- function(hash.txt, db.path=DBPATH, n.tweets=1000) {
   connection <- getConnection(db.path)
   tweets.df <- dbReadChildrenM2M(connection, 'hashes', hash.txt,
@@ -70,9 +84,3 @@ usersFromTweets <- function(newTweetss.list) {
   newTweets$screenName
 }
 
-getAllHashes <- function(db.path=DBPATH) {
-  connection <- getConnection(db.path)
-  hashes <- dbReadTable(connection, 'hashes')
-  dbDisconnect(connection)
-  hashes
-}
