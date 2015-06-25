@@ -96,25 +96,14 @@ describe("dbWriteNewRows()", {
                 equals(c(6,2)))
   })
 
-  ## describe('adding twice, second time, one row more', {
-  ##   clearDB()
-  ##   dbWriteNewRows(connection, 'questions', questions)
-  ##   dbWriteNewRows(connection, 'questions', questionsM1)
-  ##   print(dbReadTable(connection, 'questions'))
-    
-  ## })
-  
-  ## describe('with serial id', {
-  ##   it('should set id to 1 and then 2', {
-  ##     createTable(connection, "cars", "id serial, type text")
-  ##     expect_that('id' %in% dbListFields(connection, 'cars'), is_true())
-  ##     cars <- data.frame(type=c('T1', 'T2'))
-  ##     print(cars)
-  ##     dbWriteNewRows(connection, 'cars', cars, pk='type')
-  ##     rdf <- dbReadTable(connection, 'cars')
-  ##     print(rdf)
-  ##   })
-  ## })
+  describe('when a rownames are given', {
+    question.df <- data.frame(id=23456, sentence='ala ma kota')
+    rownames(question.df) <- c('row1')
+    it('should add a row',{
+      dbWriteNewRows(connection, 'questions', question.df)
+    })
+  })
+
 })
 
 describe('dbAddChildrenM2M', {

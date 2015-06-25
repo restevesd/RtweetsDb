@@ -8,6 +8,12 @@ source('RtweetsDb.R')
 twitterOAuth()
 createTwitterModels() # follows schemas in config/db
 
+addHash(c('#STOPDesigualdad','#IGUALES'))
+newTweetss.list <- updateAllHashes()
+users <- usersFromTweets(newTweetss.list)
+lookupAndAddUsers(users)
+
+
 
 
 
