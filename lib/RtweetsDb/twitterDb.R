@@ -73,6 +73,13 @@ updateAllHashes <- function(db.path=DBPATH) {
   hs
 }
 
+updateAllHashesWithUsers <- function(db.path=DBPATH) {
+  newTweetss.list <- updateAllHashes(db.path)
+  users <- usersFromTweets(newTweetss.list)
+  lookupAndAddUsers(users, db.path)
+}
+
+
 usersFromTweets <- function(newTweetss.list) {
   ## input: list of data.frames of tweets (output of updateAllHashes)
   ## or data.frame of tweets
