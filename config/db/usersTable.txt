@@ -8,10 +8,10 @@
 "created" REAL,
 "protected" INTEGER,
 "verified" INTEGER,
-"screenName" TEXT,
+"screenName" TEXT NOT NULL UNIQUE,
 "location" TEXT,
 "lang" TEXT,
-"id" TEXT,
+"id" TEXT PRIMARY KEY,
 "listedCount" REAL,
 "followRequestSent" INTEGER,
 "profileImageUrl" TEXT 

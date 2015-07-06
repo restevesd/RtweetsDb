@@ -1,4 +1,5 @@
 require('DBI')
+require('data.table')
 
 capitalize <- function(chars) {
   paste0(toupper(substring(chars, 1, 1)), substring(chars, 2))
@@ -36,15 +37,19 @@ selectNewRows <- function(df, df.old, pk='id') {
   df.new
 }
 
+
+
+eliminateDuplicates <- function(df, pk='id') {
+  subset(df, !duplicated(df[pk]))
+}
+
 dbWriteNewRows <- function(connection, model, df, pk='id') {
   rownames(df) <- c() # somehow we need to remove rownames
+  df <- eliminateDuplicates(df, pk)
   if (dbExistsTable(connection, model)) {
     df.old <- getColumn(connection, model, pk)
     df.new <- selectNewRows(df, df.old, pk)
     if (!is.null(df.new)) {
-      ## if (dim(df.old)[1]==0) {
-      ##   dbWriteTable(connection, model, df, overwrite=TRUE)
-      ## }
       dbWriteTable(connection, model, df.new, append=TRUE)
     }
   } else {

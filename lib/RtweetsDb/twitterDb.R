@@ -22,7 +22,8 @@ addUsers <- function(users.df, db.path=DBPATH) {
 }
 
 lookupAndAddUsers <- function(users, db.path=DBPATH) {
-  users.tl <- lookupUsers(users)
+  print('updating users...')
+  users.tl <- lookupUsers(unique(users))
   users.df <- twListToDF(users.tl)
   addUsers(users.df)
 }
@@ -90,5 +91,4 @@ usersFromTweets <- function(newTweetss.list) {
   }
   newTweets$screenName
 }
-
 

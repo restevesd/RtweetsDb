@@ -1,1 +1,1 @@
-"hash" TEXT
+"hash" TEXT PRIMARY KEY
