@@ -13,3 +13,5 @@ lookupAndAddCoordinates(c("Barcelona", "Zaragoza"))
 lookupAndAddCoordinates(c("Barcelona", "Antofagasta"))
 
 lookupAndAddCoordinates(c("Barcelona", "Antofagasta", "Warszawa", "Denton", "Coventry"))
+
+lookupAndAddCoordinates(c("Barcelona", "Bialystok"))
